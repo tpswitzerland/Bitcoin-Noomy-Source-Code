@@ -1,0 +1,6 @@
+usr/local/bin/bitcoinnoomy-qt usr/bin
+share/pixmaps/bitcoinnoomy32.xpm usr/share/pixmaps
+share/pixmaps/bitcoinnoomy16.xpm usr/share/pixmaps
+share/pixmaps/bitcoinnoomy128.png usr/share/pixmaps
+debian/bitcoinnoomy-qt.desktop usr/share/applications
+debian/bitcoinnoomy-qt.protocol usr/share/kde4/services/

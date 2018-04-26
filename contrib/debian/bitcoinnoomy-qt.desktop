@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=BitcoinNoomy Core
+Comment=Connect to the BitcoinNoomy P2P Network
+Comment[de]=Verbinde mit dem BitcoinNoomy peer-to-peer Netzwerk
+Comment[fr]=BitcoinNoomy, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=BitcoinNoomy, eşten eşe kriptografik sanal para birimi
+Exec=bitcoinnoomy-qt %u
+Terminal=false
+Type=Application
+Icon=bitcoinnoomy128
+MimeType=x-scheme-handler/bitcoinnoomy;
+Categories=Office;Finance;

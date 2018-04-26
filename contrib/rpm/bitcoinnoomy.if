@@ -1,0 +1,157 @@
+
+## <summary>policy for bitcoinnoomy</summary>
+
+
+########################################
+## <summary>
+##	Transition to bitcoinnoomy.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+#
+interface(`bitcoinnoomy_domtrans',`
+	gen_require(`
+		type bitcoinnoomy_t, bitcoinnoomy_exec_t;
+	')
+
+	corecmd_search_bin($1)
+	domtrans_pattern($1, bitcoinnoomy_exec_t, bitcoinnoomy_t)
+')
+
+
+########################################
+## <summary>
+##	Execute bitcoinnoomy server in the bitcoinnoomy domain.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`bitcoinnoomy_initrc_domtrans',`
+	gen_require(`
+		type bitcoinnoomy_initrc_exec_t;
+	')
+
+	init_labeled_script_domtrans($1, bitcoinnoomy_initrc_exec_t)
+')
+
+
+########################################
+## <summary>
+##	Search bitcoinnoomy lib directories.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`bitcoinnoomy_search_lib',`
+	gen_require(`
+		type bitcoinnoomy_var_lib_t;
+	')
+
+	allow $1 bitcoinnoomy_var_lib_t:dir search_dir_perms;
+	files_search_var_lib($1)
+')
+
+########################################
+## <summary>
+##	Read bitcoinnoomy lib files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`bitcoinnoomy_read_lib_files',`
+	gen_require(`
+		type bitcoinnoomy_var_lib_t;
+	')
+
+	files_search_var_lib($1)
+	read_files_pattern($1, bitcoinnoomy_var_lib_t, bitcoinnoomy_var_lib_t)
+')
+
+########################################
+## <summary>
+##	Manage bitcoinnoomy lib files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`bitcoinnoomy_manage_lib_files',`
+	gen_require(`
+		type bitcoinnoomy_var_lib_t;
+	')
+
+	files_search_var_lib($1)
+	manage_files_pattern($1, bitcoinnoomy_var_lib_t, bitcoinnoomy_var_lib_t)
+')
+
+########################################
+## <summary>
+##	Manage bitcoinnoomy lib directories.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`bitcoinnoomy_manage_lib_dirs',`
+	gen_require(`
+		type bitcoinnoomy_var_lib_t;
+	')
+
+	files_search_var_lib($1)
+	manage_dirs_pattern($1, bitcoinnoomy_var_lib_t, bitcoinnoomy_var_lib_t)
+')
+
+
+########################################
+## <summary>
+##	All of the rules required to administrate
+##	a bitcoinnoomy environment
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role allowed access.
+##	</summary>
+## </param>
+## <rolecap/>
+#
+interface(`bitcoinnoomy_admin',`
+	gen_require(`
+		type bitcoinnoomy_t;
+		type bitcoinnoomy_initrc_exec_t;
+		type bitcoinnoomy_var_lib_t;
+	')
+
+	allow $1 bitcoinnoomy_t:process { ptrace signal_perms };
+	ps_process_pattern($1, bitcoinnoomy_t)
+
+	bitcoinnoomy_initrc_domtrans($1)
+	domain_system_change_exemption($1)
+	role_transition $2 bitcoinnoomy_initrc_exec_t system_r;
+	allow $2 system_r;
+
+	files_search_var_lib($1)
+	admin_pattern($1, bitcoinnoomy_var_lib_t)
+
+')
+

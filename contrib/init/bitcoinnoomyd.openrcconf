@@ -1,0 +1,33 @@
+# /etc/conf.d/bitcoinnoomyd: config file for /etc/init.d/bitcoinnoomyd
+
+# Config file location
+#BITCOINNOOMYD_CONFIGFILE="/etc/bitcoinnoomy/bitcoinnoomy.conf"
+
+# What directory to write pidfile to?  (created and owned by $BITCOINNOOMYD_USER)
+#BITCOINNOOMYD_PIDDIR="/var/run/bitcoinnoomyd"
+
+# What filename to give the pidfile
+#BITCOINNOOMYD_PIDFILE="${BITCOINNOOMYD_PIDDIR}/bitcoinnoomyd.pid"
+
+# Where to write bitcoinnoomyd data (be mindful that the blockchain is large)
+#BITCOINNOOMYD_DATADIR="/var/lib/bitcoinnoomyd"
+
+# User and group to own bitcoinnoomyd process
+#BITCOINNOOMYD_USER="bitcoinnoomy"
+#BITCOINNOOMYD_GROUP="bitcoinnoomy"
+
+# Path to bitcoinnoomyd executable
+#BITCOINNOOMYD_BIN="/usr/bin/bitcoinnoomyd"
+
+# Nice value to run bitcoinnoomyd under
+#BITCOINNOOMYD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#BITCOINNOOMYD_OPTS=""
+
+# The timeout in seconds OpenRC will wait for bitcoinnoomyd to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+BITCOINNOOMYD_SIGTERM_TIMEOUT=60

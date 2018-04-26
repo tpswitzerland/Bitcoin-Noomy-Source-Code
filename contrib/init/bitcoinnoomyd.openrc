@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/bitcoinnoomy/.bitcoinnoomy" ]; then
+	BITCOINNOOMYD_DEFAULT_DATADIR="/var/lib/bitcoinnoomy/.bitcoinnoomy"
+else
+	BITCOINNOOMYD_DEFAULT_DATADIR="/var/lib/bitcoinnoomyd"
+fi
+
+BITCOINNOOMYD_CONFIGFILE=${BITCOINNOOMYD_CONFIGFILE:-/etc/bitcoinnoomy/bitcoinnoomy.conf}
+BITCOINNOOMYD_PIDDIR=${BITCOINNOOMYD_PIDDIR:-/var/run/bitcoinnoomyd}
+BITCOINNOOMYD_PIDFILE=${BITCOINNOOMYD_PIDFILE:-${BITCOINNOOMYD_PIDDIR}/bitcoinnoomyd.pid}
+BITCOINNOOMYD_DATADIR=${BITCOINNOOMYD_DATADIR:-${BITCOINNOOMYD_DEFAULT_DATADIR}}
+BITCOINNOOMYD_USER=${BITCOINNOOMYD_USER:-${BITCOINNOOMY_USER:-bitcoinnoomy}}
+BITCOINNOOMYD_GROUP=${BITCOINNOOMYD_GROUP:-bitcoinnoomy}
+BITCOINNOOMYD_BIN=${BITCOINNOOMYD_BIN:-/usr/bin/bitcoinnoomyd}
+BITCOINNOOMYD_NICE=${BITCOINNOOMYD_NICE:-${NICELEVEL:-0}}
+BITCOINNOOMYD_OPTS="${BITCOINNOOMYD_OPTS:-${BITCOINNOOMY_OPTS}}"
+
+name="BitcoinNoomy Core Daemon"
+description="BitcoinNoomy cryptocurrency P2P network daemon"
+
+command="/usr/bin/bitcoinnoomyd"
+command_args="-pid=\"${BITCOINNOOMYD_PIDFILE}\" \
+		-conf=\"${BITCOINNOOMYD_CONFIGFILE}\" \
+		-datadir=\"${BITCOINNOOMYD_DATADIR}\" \
+		-daemon \
+		${BITCOINNOOMYD_OPTS}"
+
+required_files="${BITCOINNOOMYD_CONFIGFILE}"
+start_stop_daemon_args="-u ${BITCOINNOOMYD_USER} \
+			-N ${BITCOINNOOMYD_NICE} -w 2000"
+pidfile="${BITCOINNOOMYD_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${BITCOINNOOMYD_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${BITCOINNOOMYD_USER}:${BITCOINNOOMYD_GROUP}" \
+	"${BITCOINNOOMYD_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${BITCOINNOOMYD_USER}:${BITCOINNOOMYD_GROUP}" \
+	"${BITCOINNOOMYD_PIDDIR}"
+
+	checkpath -f \
+	-o ${BITCOINNOOMYD_USER}:${BITCOINNOOMYD_GROUP} \
+	-m 0660 \
+	${BITCOINNOOMYD_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${BITCOINNOOMYD_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run bitcoinnoomyd."
+		eerror "The setting must appear in ${BITCOINNOOMYD_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following"
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is also recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"BitcoinNoomy Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

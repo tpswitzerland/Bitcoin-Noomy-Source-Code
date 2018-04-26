@@ -1,0 +1,22 @@
+[Unit]
+Description=BitcoinNoomy's distributed currency daemon
+After=network.target
+
+[Service]
+User=bitcoinnoomy
+Group=bitcoinnoomy
+
+Type=forking
+PIDFile=/var/lib/bitcoinnoomyd/bitcoinnoomyd.pid
+ExecStart=/usr/bin/bitcoinnoomyd -daemon -pid=/var/lib/bitcoinnoomyd/bitcoinnoomyd.pid \
+-conf=/etc/bitcoinnoomy/bitcoinnoomy.conf -datadir=/var/lib/bitcoinnoomyd -disablewallet
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

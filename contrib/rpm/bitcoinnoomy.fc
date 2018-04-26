@@ -1,0 +1,8 @@
+/usr/bin/bitcoinnoomy-cli		--	gen_context(system_u:object_r:bitcoinnoomy_exec_t,s0)
+/usr/sbin/bitcoinnoomyd		--	gen_context(system_u:object_r:bitcoinnoomy_exec_t,s0)
+/usr/lib(64)?/bitcoinnoomy/bitcoinnoomyd		--	gen_context(system_u:object_r:bitcoinnoomy_exec_t,s0)
+
+/etc/bitcoinnoomy(/.*)?		gen_context(system_u:object_r:bitcoinnoomy_conf_t,s0)
+/var/lib/bitcoinnoomy(/.*)?		gen_context(system_u:object_r:bitcoinnoomy_var_lib_t,s0)
+
+(/var)?/run/bitcoinnoomyd(/.*)?   gen_context(system_u:object_r:bitcoinnoomy_var_run_t,s0)
